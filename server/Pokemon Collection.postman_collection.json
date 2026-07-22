@@ -1,0 +1,1147 @@
+{
+  "info": {
+    "_postman_id": "3fcc0a64-a126-4893-981a-5ed9e7d2b69d",
+    "name": "Pokemon Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "56287646",
+    "_collection_link": "https://go.postman.co/collection/56287646-3fcc0a64-a126-4893-981a-5ed9e7d2b69d?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Pokemon",
+      "item": [
+        {
+          "name": "Pokemon",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    });",
+                  "",
+                  "pm.test(\"Testing to see is success is true\", function () { ",
+                  "    pm.expect(pm.response.json().success).to.be.true;",
+                  "    });",
+                  "",
+                  "pm.test(\"Testing to see if there is data in the response\", function () { ",
+                  "    pm.expect(pm.response.json().data).to.not.be.empty;",
+                  "    });"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/pokemon",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "pokemon"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pokemon Range Filtering",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    });",
+                  "",
+                  "pm.test(\"All returned Pokemon must have levels between 5 and 50\", function () {",
+                  "    const data = pm.response.json().data;",
+                  "",
+                  "    data.forEach(pokemon => {",
+                  "        pm.expect(pokemon.level).to.be.greaterThan(5);",
+                  "        pm.expect(pokemon.level).to.be.lessThan(50);",
+                  "    } );",
+                  "    });",
+                  "",
+                  "pm.test(\"Response must contain at least one Pokemon\", function () { ",
+                  "        const response = pm.response.json()",
+                  "        pm.expect(response.data.length).to.be.at.least(1)",
+                  "        })"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/pokemon?level[gt]=5&level[lt]=50",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "pokemon"
+              ],
+              "query": [
+                {
+                  "key": "level[gt]",
+                  "value": "5"
+                },
+                {
+                  "key": "level[lt]",
+                  "value": "50"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pokemon Select Field Test",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Response should have a success status\", function () {",
+                  "    pm.expect(pm.response.json().success).to.be.true;",
+                  "    });",
+                  "",
+                  "pm.test(\"Result should only show species and type\", function () {",
+                  "",
+                  "    const response = pm.response.json()",
+                  "    const pokemonList = response.data; ",
+                  "",
+                  "    pm.expect(pokemonList).to.be.an(\"array\")",
+                  "",
+                  "    pokemonList.forEach(function(pokemon) {",
+                  "        pm.expect(pokemon).to.have.property(\"species\");",
+                  "        pm.expect(pokemon).to.have.property(\"type\");",
+                  "",
+                  "        pm.expect(pokemon).to.not.have.property('level')",
+                  "        pm.expect(pokemon).to.not.have.property(\"createdAt\")",
+                  "        pm.expect(pokemon).to.not.have.property(\"updatedAt\")",
+                  "        })",
+                  "    });"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/pokemon?select=species,type&limit=10",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "pokemon"
+              ],
+              "query": [
+                {
+                  "key": "select",
+                  "value": "species,type"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pokemon Sorting Test Descending",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    });",
+                  "",
+                  "pm.test(\"Results show show level sorted from highest to lowest\", function () {",
+                  "    const response = pm.response.json().data;",
+                  "    const pokemonList = Array.isArray(response) ? response : response.data;",
+                  "    for (let i = 0; i < pokemonList.length - 1; i++) {",
+                  "        pm.expect(pokemonList[i].level).to.be.at.least(pokemonList[i + 1].level);",
+                  "        }",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/pokemon?sort=-level&limit=10",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "pokemon"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "-level"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pokemon Sorting Test Ascending",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    });",
+                  "",
+                  "pm.test(\"Results show show level sorted from lowest to highest\", function () {",
+                  "    const response = pm.response.json().data;",
+                  "    const pokemonList = Array.isArray(response) ? response : response.data;",
+                  "    for (let i = 0; i < pokemonList.length - 1; i++) {",
+                  "        pm.expect(pokemonList[i].level).to.be.at.most(pokemonList[i + 1].level);",
+                  "        }",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/pokemon?sort=level&limit=10",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "pokemon"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "level"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pokemon Pagination Test",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    });",
+                  "",
+                  "pm.test(\"Results show have at most 3 Pokemon\", function () { ",
+                  "    pm.expect(pm.response.json().data.length).to.be.at.most(3);",
+                  "    });",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/pokemon?page=1&limit=3",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "pokemon"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "3"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pokemon by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Test to see if data is returned\", function () {",
+                  "    pm.response.to.have.jsonBody('id');",
+                  "});",
+                  "",
+                  "pm.test(\"Test to see if data has a key\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property('id');",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:3000/api/v1/pokemon/{{pokemonId}}",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "pokemon",
+                "{{pokemonId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Pokemon",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status Code 201 is returned\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "})",
+                  "",
+                  "pm.test(\"Response to have success flag\", function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.success).to.be.true;",
+                  "})",
+                  "",
+                  "pm.test(\"Response to have data\", function () {",
+                  "    pm.expect(pm.response.json().data).to.not.be.null;",
+                  "})",
+                  "",
+                  "pm.test(\"Response creates resource ID\", function () {",
+                  "    const responseBody = pm.response.json()",
+                  "",
+                  "    pm.expect(responseBody.data).to.have.property(\"_id\").that.is.not.null;",
+                  "    pm.expect(responseBody.data._id).to.have.lengthOf(24)",
+                  "",
+                  "    pm.collectionVariables.set(\"pokemonId\", responseBody.data._id)",
+                  "})",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"species\" : \"Abra\", \"type\" : \"Psychic\", \"level\" : 10 }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:3000/api/v1/pokemon/",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "pokemon",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Pokemon",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    });",
+                  "",
+                  "pm.test(\"Testing to see if update actually succeeds\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "",
+                  "    pm.expect(jsonData.success).to.be.true",
+                  "    pm.expect(jsonData.message).to.include(\"updated\")",
+                  "})",
+                  "",
+                  "pm.test(\"Testing to see if timestamp is updated\", function () {",
+                  "    const jsonData = pm.response.json()",
+                  "",
+                  "    pm.expect(jsonData.data.updatedAt).to.exist",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"species\" : \"Kadabra\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:3000/api/v1/pokemon/{{pokemonId}}",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "pokemon",
+                "{{pokemonId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Pokemon",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Testing for status code 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "",
+                  "})",
+                  "",
+                  "pm.test(\"Testing to see if success flag is true\", function () {",
+                  "    pm.expect(pm.response.json().success).to.be.true;",
+                  "})",
+                  "",
+                  "pm.test(\"Testing to see if Document was handled correctly\", function () {",
+                  "    pm.expect(pm.response.json()).to.not.be.undefined",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "localhost:3000/api/v1/pokemon/{{pokemonId}}",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "pokemon",
+                "{{pokemonId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Trainers",
+      "item": [
+        {
+          "name": "Trainers",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    });",
+                  "",
+                  "pm.test(\"Testing to see is success is true\", function () { ",
+                  "    pm.expect(pm.response.json().success).to.be.true;",
+                  "    });",
+                  "",
+                  "pm.test(\"Testing to see if there is data in the response\", function () { ",
+                  "    pm.expect(pm.response.json().data).to.not.be.empty;",
+                  "    });"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "localhost:3000/api/v1/trainers?page=1&limit=1",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "trainers"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Trainer Range Filtering Test",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    });",
+                  "",
+                  "pm.test(\"All returned Trainers must have ages between 9 and 30\", function () {",
+                  "    const data = pm.response.json().data;",
+                  "",
+                  "    data.forEach(trainer => {",
+                  "        pm.expect(trainer.age).to.be.greaterThan(9);",
+                  "        pm.expect(trainer.age).to.be.lessThan(30);",
+                  "    } );",
+                  "    });",
+                  "",
+                  "pm.test(\"Response must contain at least one Trainer\", function () { ",
+                  "        const response = pm.response.json()",
+                  "        pm.expect(response.data.length).to.be.at.least(1)",
+                  "        })"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/trainers?age[gt]=9&age[lt]=30",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "trainers"
+              ],
+              "query": [
+                {
+                  "key": "age[gt]",
+                  "value": "9"
+                },
+                {
+                  "key": "age[lt]",
+                  "value": "30"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Trainer Select Field Test Copy",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Response should have a success status\", function () {",
+                  "    pm.expect(pm.response.json().success).to.be.true;",
+                  "    });",
+                  "",
+                  "pm.test(\"Result should only show name and age\", function () {",
+                  "",
+                  "    const response = pm.response.json()",
+                  "    const trainerList = response.data; ",
+                  "",
+                  "    pm.expect(trainerList).to.be.an(\"array\")",
+                  "",
+                  "    trainerList.forEach(function(trainer) {",
+                  "        pm.expect(trainer).to.have.property(\"name\");",
+                  "        pm.expect(trainer).to.have.property(\"age\");",
+                  "",
+                  "        pm.expect(trainer).to.not.have.property('badges')",
+                  "        pm.expect(trainer).to.not.have.property(\"createdAt\")",
+                  "        pm.expect(trainer).to.not.have.property(\"updatedAt\")",
+                  "        })",
+                  "    });"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/trainers?select=name,age",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "trainers"
+              ],
+              "query": [
+                {
+                  "key": "select",
+                  "value": "name,age"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Trainer Sorting Test Ascending",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    });",
+                  "",
+                  "pm.test(\"Results show show badges sorted from lowest to highest\", function () {",
+                  "    const response = pm.response.json();",
+                  "    const trainerList = response.data",
+                  "    for (let i = 0; i < trainerList.length - 1; i++) {",
+                  "        pm.expect(trainerList[i].badges).to.be.at.most(trainerList[i + 1].badges);",
+                  "        }",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/trainers?sort=badges&limit=10",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "trainers"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "badges"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Trainer Sorting Test Descending",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    });",
+                  "",
+                  "pm.test(\"Results show show badges sorted from highest to lowest\", function () {",
+                  "    const response = pm.response.json();",
+                  "    const trainerList = response.data",
+                  "    for (let i = 0; i < trainerList.length - 1; i++) {",
+                  "        pm.expect(trainerList[i].badges).to.be.at.least(trainerList[i + 1].badges);",
+                  "        }",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/trainers?sort=-badges&limit=10",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "trainers"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "-badges"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Trianer Pagination Test",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    });",
+                  "",
+                  "pm.test(\"Results show have at most 1 Trainer\", function () { ",
+                  "    pm.expect(pm.response.json().data.length).to.be.at.most(1);",
+                  "    });",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/api/v1/trainers?page=1&limit=1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "trainers"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Trainers by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Test to see if data is returned\", function () {",
+                  "    pm.response.to.have.jsonBody('id');",
+                  "});",
+                  "",
+                  "pm.test(\"Test to see if data has a key\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property('id');",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"test\" : \"this is a test for my video for school!\"\n}"
+            },
+            "url": {
+              "raw": "localhost:3000/api/v1/trainers/{{trainerId}}",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "trainers",
+                "{{trainerId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Trainer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status Code 201 is returned\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "})",
+                  "",
+                  "pm.test(\"Response to have success flag\", function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.success).to.be.true;",
+                  "})",
+                  "",
+                  "pm.test(\"Response to have data\", function () {",
+                  "    pm.expect(pm.response.json().data).to.not.be.null;",
+                  "})",
+                  "",
+                  "pm.test(\"Response creates resource ID\", function () {",
+                  "    const responseBody = pm.response.json()",
+                  "",
+                  "    pm.expect(responseBody.data).to.have.property(\"_id\").that.is.not.null;",
+                  "    pm.expect(responseBody.data._id).to.have.lengthOf(24)",
+                  "",
+                  "    pm.collectionVariables.set(\"trainerId\", responseBody.data._id)",
+                  "})",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{   \"name\": \"Phil\", \"age\": 26, \"badges\" : 3, \"description\" : \"I like Pokemon from no regions!\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:3000/api/v1/trainers/",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "trainers",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Trainer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    });",
+                  "",
+                  "pm.test(\"Testing to see if update actually succeeds\", function () {",
+                  "    const jsonData = pm.response.json();",
+                  "",
+                  "    pm.expect(jsonData.success).to.be.true",
+                  "    pm.expect(jsonData.message).to.include(\"updated\")",
+                  "})",
+                  "",
+                  "pm.test(\"Testing to see if timestamp is updated\", function () {",
+                  "    const jsonData = pm.response.json()",
+                  "",
+                  "    pm.expect(jsonData.data.updatedAt).to.exist",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"badges\" : 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "localhost:3000/api/v1/trainers/{{trainerId}}",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "trainers",
+                "{{trainerId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Trainer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Testing for status code 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "",
+                  "})",
+                  "",
+                  "pm.test(\"Testing to see if success flag is true\", function () {",
+                  "    pm.expect(pm.response.json().success).to.be.true;",
+                  "})",
+                  "",
+                  "pm.test(\"Testing to see if Document was handled correctly\", function () {",
+                  "    pm.expect(pm.response.json()).to.not.be.undefined",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"test\" : \"this is a test for my video for school!\"\n}"
+            },
+            "url": {
+              "raw": "localhost:3000/api/v1/trainers/{{trainerId}}",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "v1",
+                "trainers",
+                "{{trainerId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "pokemonId",
+      "value": ""
+    },
+    {
+      "key": "trainerId",
+      "value": ""
+    }
+  ]
+}
