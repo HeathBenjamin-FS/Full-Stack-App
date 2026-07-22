@@ -1,35 +1,34 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import axios from "axios";
 import Header from "./components/Header";
 import Search from "./components/Search";
+import TrainerList from "./components/TrainerList";
+import { fetchTrainers } from "./API";
 
 import "./App.css";
 
-// const fetchTrainers = async (e) => {
-//   e.preventDefault();
-// };
-
 function App() {
-  const [collectionOne, setCollectionOne] = useState([]);
+  const [trainers, setTrainers] = useState([]);
 
-  const urlAPI = "http://localhost:3000/api/v1/trainers";
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    // console.log(e.target.firstField.value);
+
+    const data = await fetchTrainers();
+
+    setTrainers(data.data.data);
+
+    console.log(trainers);
+    return data;
+  };
 
   useEffect(() => {
-    console.log("test 2");
-    const testConnection = async () => {
-      console.log("Fetch started");
-      try {
-        const response = await axios.get(urlAPI);
-        console.log(response.data.data);
-
-        setCollectionOne(response.data);
-
-        console.log("Full data response:", response);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    testConnection();
+    fetchTrainers()
+      .then((res) => {
+        console.log(res.data.data);
+        setTrainers(res.data.data);
+      })
+      .catch((err) => console.log(err));
   }, []);
 
   return (
@@ -37,13 +36,58 @@ function App() {
       <header>
         <Header />
       </header>
-      <main>
-        <Search />
+      <main style={styles.main}>
+        <Search onSubmit={onSubmit} />
 
-        <div></div>
+        {/* <h4>Trainers: {trainers.length}</h4> */}
+
+        <TrainerList trainers={trainers} />
+
+        {/* {trainers.length === 0 ? (
+          <p>There are no trainers</p>
+        ) : (
+          trainers.map((trainer) => (
+            <ul key={trainer._id}>
+              <li>
+                Name:
+                {trainer.name} <br />
+                Badges:
+                {trainer.badges} <br />
+              </li>
+            </ul>
+          ))
+        )} */}
+
+        {/* 
+        // <ul>
+        //   {collectionOne.map((trainer) => {
+        //     return (
+        //       <li key={trainer._id}>
+        //         <strong>Name: </strong>
+        //         {trainer.name}
+        //         <br />
+        //         <strong>Badges: </strong>
+        //         {trainer.badges}
+        //         <br />
+        //         <strong>Age: </strong>
+        //         {trainer.age}
+        //       </li>
+        //     );
+        //   })}
+        // </ul> */}
       </main>
     </>
   );
 }
 
 export default App;
+
+const styles = {
+  main: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: "5rem",
+  },
+};

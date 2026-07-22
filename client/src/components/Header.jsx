@@ -2,10 +2,16 @@ import React from "react";
 
 const Header = () => {
   return (
-    <div>
-      <h1>Test</h1>
+    <div style={styles.header}>
+      <h1>Pokemon/Trainer Search Engine!</h1>
     </div>
   );
 };
 
 export default Header;
+
+const styles = {
+  header: {
+    textAlign: "center",
+  },
+};
