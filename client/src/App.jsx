@@ -45,6 +45,8 @@ function App() {
 
       const updatedList = await fetchPokemon();
       setPokemon(updatedList.data.data);
+      await fetchPokemon();
+      await fetchTrainers();
     } catch (error) {
       console.log(error);
     }

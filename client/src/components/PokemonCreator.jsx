@@ -14,6 +14,7 @@ const PokemonCreator = ({ handlePokemonCreation, trainers }) => {
       species: name,
       level: Number(level),
       type: type,
+      trainer: selectedTrainer,
     });
 
     setName("");
