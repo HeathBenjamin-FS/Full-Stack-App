@@ -62,7 +62,14 @@ function App() {
   const handleAssignPokemon = async (pokemonId, newTrainerId) => {
     try {
       await updatePokemon(pokemonId, { trainer: newTrainerId });
-      await updateTrainer(newTrainerId, { pokemon: pokemonId });
+
+      const targetTrainer = trainers.find((t) => t._id === newTrainerId);
+      const existingTeam = targetTrainer?.pokemon || [];
+
+      if (!existingTeam.includes(pokemonId)) {
+        const fullTeam = [...existingTeam, pokemonId];
+        await updateTrainer(newTrainerId, { pokemon: fullTeam });
+      }
 
       const resPoke = await fetchPokemon();
       const resTrainer = await fetchTrainers();
