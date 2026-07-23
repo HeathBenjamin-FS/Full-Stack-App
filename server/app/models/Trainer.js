@@ -19,7 +19,7 @@ const trainerSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      required: [true, "Please add a description"],
+
       maxLength: [500, "Decription cannot be more than 500 characters"],
     },
     pokemon: [

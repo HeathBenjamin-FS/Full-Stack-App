@@ -1,25 +1,53 @@
 import { useEffect, useLayoutEffect, useState } from "react";
 import axios from "axios";
 import Header from "./components/Header";
-import Search from "./components/Search";
+import TrainerCreator from "./components/TrainerCreator";
+import PokemonCreator from "./components/PokemonCreator";
 import TrainerList from "./components/TrainerList";
-import { fetchTrainers } from "./API";
+import PokemonList from "./components/PokemonList";
+import EverythingButton from "./components/EverythingButton";
+import { fetchTrainers, fetchPokemon, createTrainer, createPokemon } from "./API";
 
 import "./App.css";
+import Pokemon from "./components/Pokemon";
 
 function App() {
   const [trainers, setTrainers] = useState([]);
+  const [pokemon, setPokemon] = useState([]);
 
-  const onSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // console.log(e.target.firstField.value);
 
-    const data = await fetchTrainers();
+    const data1 = await fetchTrainers();
+    const data2 = await fetchPokemon();
 
-    setTrainers(data.data.data);
+    setTrainers(data1.data.data);
+    setPokemon(data2.data.data);
 
     console.log(trainers);
-    return data;
+    console.log(pokemon);
+  };
+
+  const handleCreation = async (newTrainer) => {
+    try {
+      await createTrainer(newTrainer);
+
+      const updatedList = await fetchTrainers();
+      setTrainers(updatedList.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handlePokemonCreation = async (newPokemon) => {
+    try {
+      await createPokemon(newPokemon);
+
+      const updatedList = await fetchPokemon();
+      setPokemon(updatedList.data.data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -29,6 +57,15 @@ function App() {
         setTrainers(res.data.data);
       })
       .catch((err) => console.log(err));
+
+    fetchPokemon()
+      .then((res) => {
+        console.log(res.data.data);
+        setPokemon(res.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
 
   return (
@@ -37,44 +74,14 @@ function App() {
         <Header />
       </header>
       <main style={styles.main}>
-        <Search onSubmit={onSubmit} />
+        <TrainerCreator handleCreation={handleCreation} />
+        <PokemonCreator handlePokemonCreation={handlePokemonCreation} />
+        <EverythingButton handleSubmit={handleSubmit} />
+        <div style={styles.results}>
+          <TrainerList trainers={trainers} />
 
-        {/* <h4>Trainers: {trainers.length}</h4> */}
-
-        <TrainerList trainers={trainers} />
-
-        {/* {trainers.length === 0 ? (
-          <p>There are no trainers</p>
-        ) : (
-          trainers.map((trainer) => (
-            <ul key={trainer._id}>
-              <li>
-                Name:
-                {trainer.name} <br />
-                Badges:
-                {trainer.badges} <br />
-              </li>
-            </ul>
-          ))
-        )} */}
-
-        {/* 
-        // <ul>
-        //   {collectionOne.map((trainer) => {
-        //     return (
-        //       <li key={trainer._id}>
-        //         <strong>Name: </strong>
-        //         {trainer.name}
-        //         <br />
-        //         <strong>Badges: </strong>
-        //         {trainer.badges}
-        //         <br />
-        //         <strong>Age: </strong>
-        //         {trainer.age}
-        //       </li>
-        //     );
-        //   })}
-        // </ul> */}
+          <PokemonList pokemon={pokemon} />
+        </div>
       </main>
     </>
   );
@@ -89,5 +96,12 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     marginTop: "5rem",
+  },
+
+  results: {
+    display: "flex",
+    gap: "5rem",
+    marginTop: "3rem",
+    padding: "1rem",
   },
 };

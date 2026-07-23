@@ -7,3 +7,19 @@ export const fetchTrainers = async () => {
   //   console.log(response);
   return response;
 };
+
+export const fetchPokemon = async () => {
+  const response = await axios.get(`${BASE}/pokemon`);
+
+  return response;
+};
+
+export const createTrainer = async (trainer) => {
+  const response = await axios.post(`${BASE}/trainers`, trainer);
+  return response;
+};
+
+export const createPokemon = async (pokemon) => {
+  const response = await axios.post(`${BASE}/pokemon`, pokemon);
+  return response;
+};
