@@ -6,7 +6,7 @@ import PokemonCreator from "./components/PokemonCreator";
 import TrainerList from "./components/TrainerList";
 import PokemonList from "./components/PokemonList";
 import EverythingButton from "./components/EverythingButton";
-import { fetchTrainers, fetchPokemon, createTrainer, createPokemon } from "./API";
+import { fetchTrainers, fetchPokemon, createTrainer, createPokemon, seePokemonForTrainer, updatePokemon, updateTrainer } from "./API";
 
 import "./App.css";
 import Pokemon from "./components/Pokemon";
@@ -50,6 +50,30 @@ function App() {
     }
   };
 
+  const onSelectTrainer = async (trainerId) => {
+    try {
+      const res = await seePokemonForTrainer(trainerId);
+      setPokemon(res.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleAssignPokemon = async (pokemonId, newTrainerId) => {
+    try {
+      await updatePokemon(pokemonId, { trainer: newTrainerId });
+      await updateTrainer(newTrainerId, { pokemon: pokemonId });
+
+      const resPoke = await fetchPokemon();
+      const resTrainer = await fetchTrainers();
+
+      setPokemon(resPoke.data.data);
+      setTrainers(resTrainer.data.data);
+    } catch (error) {
+      (console.log(error), "Failed to assign pokemon to trainer!");
+    }
+  };
+
   useEffect(() => {
     fetchTrainers()
       .then((res) => {
@@ -75,12 +99,12 @@ function App() {
       </header>
       <main style={styles.main}>
         <TrainerCreator handleCreation={handleCreation} />
-        <PokemonCreator handlePokemonCreation={handlePokemonCreation} />
+        <PokemonCreator handlePokemonCreation={handlePokemonCreation} trainers={trainers} />
         <EverythingButton handleSubmit={handleSubmit} />
         <div style={styles.results}>
-          <TrainerList trainers={trainers} />
+          <TrainerList trainers={trainers} onSelectTrainer={onSelectTrainer} />
 
-          <PokemonList pokemon={pokemon} />
+          <PokemonList pokemon={pokemon} onAssignPokemon={handleAssignPokemon} trainers={trainers} />
         </div>
       </main>
     </>
